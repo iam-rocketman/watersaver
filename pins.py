@@ -38,20 +38,24 @@ def makeDBCall(data):
     logging.error("error encountered: "+ str(e))
 
 while True:
-    tempraw = os.popen('vcgencmd measure_temp').readline()
-    temp = int(re.search(r'\d+', tempraw).group())
-    makeDBCall({"CPU":temp})
-    if temp>65:
-        GPIO.output(Fanpin, True)
-        makeDBCall({"CPUFan":"ON"})
-    else:
-        GPIO.output(Fanpin, False)
-        makeDBCall({"CPUFan":"OFF"})
-    Pump  = db.child("Pump").get().val()
-    if prevPump != Pump:
-      GPIO.output(Pumppin,Pump)
-      prevPump = Pump
-    Valve  = db.child("Valve").get().val()
-    if prevValve != Valve:
-      GPIO.output(Valvepin,Valve)
-      prevValve = Valve
+    try:
+      tempraw = os.popen('vcgencmd measure_temp').readline()
+      temp = int(re.search(r'\d+', tempraw).group())
+      makeDBCall({"CPU":temp})
+      if temp>65:
+          GPIO.output(Fanpin, True)
+          makeDBCall({"CPUFan":"ON"})
+      else:
+          GPIO.output(Fanpin, False)
+          makeDBCall({"CPUFan":"OFF"})
+      Pump  = db.child("Pump").get().val()
+      if prevPump != Pump:
+        GPIO.output(Pumppin,Pump)
+        prevPump = Pump
+      Valve  = db.child("Valve").get().val()
+      if prevValve != Valve:
+        GPIO.output(Valvepin,Valve)
+        prevValve = Valve
+    catch Exception as e:
+      logging.error(e)
+      
