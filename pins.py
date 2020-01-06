@@ -1,14 +1,14 @@
 import re
 import os
-from time import sleep
-import string
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-Valvepin = 21
-Pumppin = 20
+from time import sleep 
+import string 
+import RPi.GPIO as GPIO 
+GPIO.setmode(GPIO.BCM) 
+GPIO.setwarnings(False) 
+Valvepin = 21 
+Pumppin = 20 
 Fanpin = 16
-GPIO.setup(Valvepin,GPIO.OUT)
+GPIO.setup(Valvepin,GPIO.OUT) 
 GPIO.setup(Pumppin,GPIO.OUT)
 GPIO.setup(Fanpin,GPIO.OUT)
 
@@ -19,7 +19,7 @@ config = {
   "authDomain": "switch-e7401.firebaseapp.com",
   "databaseURL": "https://switch-e7401.firebaseio.com",
   "storageBucket": "switch-e7401.appspot.com"
-  }
+}
 
 firebase = pyrebase.initialize_app(config)
 
@@ -30,7 +30,7 @@ while True:
     tempraw = os.popen('vcgencmd measure_temp').readline()
     temp = int(re.search(r'\d+', tempraw).group())
     db.update({"CPU":temp})
-        if temp>65:
+    if temp>65:
         GPIO.output(Fanpin, True)
         db.update({"CPUFan":"ON"})
     else:

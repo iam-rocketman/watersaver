@@ -25,3 +25,5 @@ while True:
             line = ser.readline().decode("utf-8")
             print (line)
             db.update({"Data":line})
+
+
