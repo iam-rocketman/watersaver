@@ -33,7 +33,7 @@ prevValve = None
 
 def makeDBCall(data):
   try:
-    makeDBCall(data)
+    db.update(data)
   except Exception as e:
     logging.error("error encountered: "+ str(e))
 
@@ -48,14 +48,20 @@ while True:
       else:
           GPIO.output(Fanpin, False)
           makeDBCall({"CPUFan":"OFF"})
-      Pump  = db.child("Pump").get().val()
-      if prevPump != Pump:
-        GPIO.output(Pumppin,Pump)
-        prevPump = Pump
-      Valve  = db.child("Valve").get().val()
-      if prevValve != Valve:
-        GPIO.output(Valvepin,Valve)
-        prevValve = Valve
+      try:
+        Pump  = db.child("Pump").get().val()
+        if prevPump != Pump:
+          GPIO.output(Pumppin,Pump)
+          prevPump = Pump
+      catch Exception as e:
+        logging.error("error in getting db child pump value: " + str(e))
+      try:
+        Valve  = db.child("Valve").get().val()
+        if prevValve != Valve:
+          GPIO.output(Valvepin,Valve)
+          prevValve = Valve
+      catch Exception as e:
+        logging.error("error in getting db child valve value: " + str(e))
     catch Exception as e:
       logging.error(e)
       
