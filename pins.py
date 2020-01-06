@@ -3,6 +3,8 @@ import os
 from time import sleep 
 import string 
 import RPi.GPIO as GPIO 
+import logging
+
 GPIO.setmode(GPIO.BCM) 
 GPIO.setwarnings(False) 
 Valvepin = 21 
@@ -26,17 +28,30 @@ firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 #db.child("users").child("Morty")
 
+prevPump = None
+prevValve = None
+
+def makeDBCall(data):
+  try:
+    makeDBCall(data)
+  except Exception as e:
+    logging.error("error encountered: "+ str(e))
+
 while True:
     tempraw = os.popen('vcgencmd measure_temp').readline()
     temp = int(re.search(r'\d+', tempraw).group())
-    db.update({"CPU":temp})
+    makeDBCall({"CPU":temp})
     if temp>65:
         GPIO.output(Fanpin, True)
-        db.update({"CPUFan":"ON"})
+        makeDBCall({"CPUFan":"ON"})
     else:
         GPIO.output(Fanpin, False)
-        db.update({"CPUFan":"OFF"})
+        makeDBCall({"CPUFan":"OFF"})
     Pump  = db.child("Pump").get().val()
-    GPIO.output(Pumppin,Pump)
+    if prevPump != Pump:
+      GPIO.output(Pumppin,Pump)
+      prevPump = Pump
     Valve  = db.child("Valve").get().val()
-    GPIO.output(Valvepin,Valve)
+    if prevValve != Valve:
+      GPIO.output(Valvepin,Valve)
+      prevValve = Valve
